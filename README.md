@@ -1,94 +1,132 @@
-# AI Interview Simulator Platform
+# Prepwise AI
 
-Open-source AI interview practice platform for students and job seekers. The product is built as a serious interview lab / career cockpit with DSA, HR, resume-based, and mixed interview modes.
+AI-powered interview practice platform for students and job seekers.
 
-## Features
+[Live Demo](https://prepwise-ai-sooty.vercel.app) · [Architecture Plan](docs/technical-plan.md) · [Repository](https://github.com/Rajtiwari0202/prepwise-ai)
+
+Prepwise AI is a full-stack, open-source interview simulator built like a real product: authenticated dashboards, resume-aware interview setup, live AI interview sessions, browser voice input/output, structured feedback reports, weakness analysis, and interview history.
+
+The project is intentionally designed to be free to run. It ships with a deterministic local mock AI provider by default and includes an optional Gemini provider behind an abstraction layer. OpenAI and paid-only services are not required.
+
+## Screenshots
+
+### Landing Page
+
+![Prepwise AI landing page](public/screenshots/landing.png)
+
+### Dashboard
+
+![Prepwise AI dashboard](public/screenshots/dashboard.png)
+
+### Create Interview
+
+![Create interview flow](public/screenshots/create-interview.png)
+
+### Live Interview Room
+
+![Live interview room](public/screenshots/interview-room.png)
+
+### Feedback Report
+
+![Feedback report](public/screenshots/report.png)
+
+### Resume Profile
+
+![Resume profile page](public/screenshots/profile.png)
+
+## What It Does
+
+Prepwise AI helps candidates practice interviews in a realistic loop:
+
+1. Choose an interview mode.
+2. Select a target role and difficulty.
+3. Answer questions by text or voice.
+4. Receive AI evaluation after each answer.
+5. Generate a structured feedback report.
+6. Track past sessions and improvement areas.
+
+Supported modes:
+
+- DSA interviews
+- HR and behavioral interviews
+- Resume-based interviews
+- Mixed interviews
+
+## Core Features
 
 - AI interviewer with provider abstraction
-- Free default mock AI provider, no paid API required
-- Optional Gemini provider through environment variables
-- Browser voice input with `SpeechRecognition`
-- Browser voice output with `SpeechSynthesis`
+- Browser voice input using `SpeechRecognition`
+- Browser voice output using `SpeechSynthesis`
 - DSA, HR, resume-based, and mixed interview modes
-- Resume/profile context for question generation
-- Structured answer evaluation
-- Feedback report with weakness analysis
+- Resume/profile context for personalized questions
+- Answer evaluation with score, strengths, and improvements
+- Feedback report with:
+  - Overall score
+  - Communication score
+  - Technical score
+  - Confidence score
+  - Strengths
+  - Weaknesses
+  - Missed concepts
+  - Suggested improvements
+  - Recommended revision topics
+  - Better sample answers
+  - Interview transcript
 - Interview history dashboard
-- Custom JWT authentication with HTTP-only cookies
-- MongoDB data model with Mongoose
+- User authentication
+- Protected interview and report routes
+- Free default mock AI provider
+- Optional Gemini provider
+- Production-ready folder structure
+- Type-safe validation and database models
 
 ## Tech Stack
 
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- MongoDB and Mongoose
-- Custom JWT auth
-- Zod validation
-- Browser speech APIs
-- Optional Google Gemini free-tier provider
-
-OpenAI is intentionally not included.
-
-## Getting Started
-
-### 1. Install dependencies
-
-```bash
-npm install
-```
-
-### 2. Configure environment
-
-Copy `.env.example` to `.env` and update the values.
-
-```bash
-MONGODB_URI=mongodb://127.0.0.1:27017/interview_ai
-JWT_SECRET=replace-with-a-long-random-secret
-AI_PROVIDER=mock
-GEMINI_API_KEY=
-GEMINI_MODEL=gemini-1.5-flash
-```
-
-For a completely free local run, keep:
-
-```bash
-AI_PROVIDER=mock
-```
-
-To use Gemini, set:
-
-```bash
-AI_PROVIDER=gemini
-GEMINI_API_KEY=your-free-tier-key
-```
-
-If `AI_PROVIDER=gemini` is set but no key is present, the app falls back to the mock provider.
-
-### 3. Start MongoDB
-
-Use a local MongoDB instance or a free hosted MongoDB database. Do not commit real credentials.
-
-### 4. Run the app
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-## Useful Commands
-
-```bash
-npm run dev
-npm run build
-npm run lint
-npm run typecheck
-```
+| Layer | Technology |
+| --- | --- |
+| Frontend | Next.js App Router, React, TypeScript |
+| Styling | Tailwind CSS |
+| Backend | Next.js Route Handlers |
+| Database | MongoDB, Mongoose |
+| Auth | Custom JWT, HTTP-only cookies, bcrypt |
+| Validation | Zod |
+| AI | Provider abstraction, mock provider, optional Gemini |
+| Voice | Browser Web Speech APIs |
+| Deployment | Vercel + MongoDB Atlas |
 
 ## Architecture
 
-See [docs/technical-plan.md](docs/technical-plan.md) for product scope, system flow, database schema, folder structure, milestones, and commit plan.
+```mermaid
+flowchart LR
+  User["User Browser"] --> App["Vercel Next.js App"]
+  App --> Pages["App Router Pages"]
+  App --> API["Route Handlers"]
+  API --> Auth["JWT Auth Service"]
+  API --> AI["AI Interview Service"]
+  AI --> Mock["Mock Provider"]
+  AI --> Gemini["Optional Gemini Provider"]
+  API --> DB["MongoDB Atlas"]
+  Pages --> Voice["Browser Speech APIs"]
+```
+
+Key backend routes:
+
+```text
+app/api/auth/*
+app/api/interviews/*
+app/api/profile/*
+app/api/reports/*
+```
+
+Key service layers:
+
+```text
+lib/ai/interviewService.ts
+lib/ai/providers/mock.ts
+lib/ai/providers/gemini.ts
+lib/auth/session.ts
+lib/db/mongoose.ts
+```
 
 ## Project Structure
 
@@ -103,7 +141,6 @@ app/
   reports/
 components/
   auth/
-  dashboard/
   interview/
   layout/
   profile/
@@ -116,41 +153,167 @@ lib/
   ai/
   auth/
   db/
+  utils/
   validators/
 models/
+public/
+  screenshots/
 types/
 ```
 
-## AI Provider Design
+## Getting Started
 
-The app calls `lib/ai/interviewService.ts`, which selects a provider behind the `AIProvider` interface.
+### 1. Clone the repository
 
-- `lib/ai/providers/mock.ts`: deterministic local provider for free development and demos.
-- `lib/ai/providers/gemini.ts`: optional Gemini provider.
-- `lib/ai/prompts.ts`: prompt builders kept away from route handlers.
+```bash
+git clone https://github.com/Rajtiwari0202/prepwise-ai.git
+cd prepwise-ai
+```
 
-This keeps the product open-source friendly and avoids hard coupling to paid APIs.
+### 2. Install dependencies
 
-## Voice Design
+```bash
+npm install
+```
 
-Voice is intentionally browser-first:
+### 3. Configure environment variables
 
-- `hooks/use-speech-recognition.ts`
-- `hooks/use-speech-synthesis.ts`
+Create `.env` from `.env.example`.
 
-These hooks isolate the browser APIs so a future WebRTC service can be added without rewriting the interview room.
+```bash
+MONGODB_URI=mongodb://127.0.0.1:27017/interview_ai
+JWT_SECRET=replace-with-a-long-random-secret
+AI_PROVIDER=mock
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-1.5-flash
+```
+
+For a completely free local setup, keep:
+
+```bash
+AI_PROVIDER=mock
+```
+
+To use Gemini:
+
+```bash
+AI_PROVIDER=gemini
+GEMINI_API_KEY=your-gemini-key
+GEMINI_MODEL=gemini-1.5-flash
+```
+
+If Gemini is selected but no key is provided, the app falls back to the mock provider.
+
+### 4. Start MongoDB
+
+Use either:
+
+- Local MongoDB
+- Free MongoDB Atlas cluster
+
+Never commit real database credentials.
+
+### 5. Run the development server
+
+```bash
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+## Scripts
+
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run typecheck
+```
+
+## Deployment
+
+Recommended free deployment:
+
+- Vercel for the full-stack Next.js app
+- MongoDB Atlas for the database
+- `AI_PROVIDER=mock` for free AI simulation
+
+Production environment variables:
+
+```bash
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster-url>/prepwise_ai?retryWrites=true&w=majority
+JWT_SECRET=your-long-production-secret
+AI_PROVIDER=mock
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-1.5-flash
+```
+
+Vercel hosts both the frontend and backend route handlers. A separate Express server is not required for this version.
+
+## Voice Support
+
+Voice output uses browser speech synthesis and works broadly across modern browsers.
+
+Voice input uses browser speech recognition, which is best supported in:
+
+- Google Chrome
+- Microsoft Edge
+
+If voice input does not work, allow microphone access in the browser or use text answers.
+
+## Database Models
+
+- `User`
+- `Profile`
+- `Interview`
+- `Question`
+- `Answer`
+- `FeedbackReport`
+
+## Version 1 Scope
+
+Version 1 includes:
+
+- Full-stack app deployment
+- Authentication
+- Interview creation
+- Live interview room
+- Voice input/output support
+- AI question generation through provider abstraction
+- Answer evaluation
+- Feedback report generation
+- Interview history
+- Resume/profile context
+- Professional responsive UI
+
+## Roadmap
+
+- PDF/DOCX resume parsing
+- Password reset and email verification
+- Rate limiting
+- Redis-backed session/report caching
+- WebRTC interview mode
+- Interview timer and proctor-style signals
+- Better AI provider streaming
+- Public shareable report links
+- Admin analytics dashboard
 
 ## Security Notes
 
-- `.env` is ignored by git.
-- JWT is stored in an HTTP-only cookie.
 - Passwords are hashed with bcrypt.
-- Route handlers validate input with Zod.
+- JWTs are stored in HTTP-only cookies.
+- API routes validate inputs with Zod.
+- `.env` is ignored by git.
 - Real API keys and database credentials should never be committed.
 
-## Current Audit Note
+## Audit Note
 
-`npm audit` reports a moderate advisory through Next's internal PostCSS dependency and suggests a breaking downgrade. Do not apply `npm audit fix --force` for that case; update Next normally when a safe upstream patch is available.
+`npm audit` may report a moderate advisory through Next's internal PostCSS dependency and suggest a breaking downgrade. Do not run `npm audit fix --force` for that case. Update Next normally when a safe upstream patch is available.
 
 ## License
 
