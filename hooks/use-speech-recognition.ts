@@ -9,6 +9,7 @@ type SpeechRecognitionLike = {
   start: () => void;
   stop: () => void;
   onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
   onend: (() => void) | null;
 };
 
@@ -23,6 +24,7 @@ export function useSpeechRecognition() {
   );
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const win = window as typeof window & {
@@ -44,14 +46,37 @@ export function useSpeechRecognition() {
         .map((result) => result[0]?.transcript || "")
         .join(" ");
       setTranscript(text);
+      setError("");
+    };
+    recognition.onerror = (event) => {
+      setIsListening(false);
+
+      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+        setError("Microphone permission was blocked. Allow microphone access in the browser and try again.");
+        return;
+      }
+
+      if (event.error === "no-speech") {
+        setError("No speech was detected. Try again in a quieter place or answer with text.");
+        return;
+      }
+
+      setError("Voice input stopped. Try Chrome or Edge with microphone permission enabled.");
     };
     recognition.onend = () => setIsListening(false);
     recognitionRef.current = recognition;
   }, []);
 
   function start() {
-    recognitionRef.current?.start();
-    setIsListening(true);
+    setError("");
+
+    try {
+      recognitionRef.current?.start();
+      setIsListening(true);
+    } catch {
+      setIsListening(false);
+      setError("Voice input could not start. Refresh the page and try again, or answer with text.");
+    }
   }
 
   function stop() {
@@ -63,5 +88,5 @@ export function useSpeechRecognition() {
     setTranscript("");
   }
 
-  return { isSupported, isListening, transcript, start, stop, reset, setTranscript };
+  return { isSupported, isListening, transcript, error, start, stop, reset, setTranscript };
 }

@@ -187,6 +187,17 @@ export function InterviewRoom({ interview, questions, answers, reportId }: Inter
               Voice transcript ready. Review it before submitting.
             </div>
           )}
+          {!speech.isSupported && (
+            <div className="mt-3 rounded-md border border-amber-300/30 bg-amber-400/10 p-3 text-sm leading-6 text-amber-100">
+              Voice input needs Chrome or Edge with microphone permission enabled. If you are using Firefox,
+              Safari, or an embedded browser, answer with text or reopen this page in Chrome/Edge.
+            </div>
+          )}
+          {speech.error && (
+            <div className="mt-3 rounded-md border border-amber-300/30 bg-amber-400/10 p-3 text-sm leading-6 text-amber-100">
+              {speech.error}
+            </div>
+          )}
           {error && <div className="mt-3 rounded-md border border-rose-300/30 bg-rose-400/10 p-3 text-sm text-rose-100">{error}</div>}
           <div className="mt-4 flex flex-wrap gap-3">
             <Button
