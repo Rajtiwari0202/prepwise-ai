@@ -132,21 +132,45 @@ https://prepwise-ai-sooty.vercel.app/api/health
 
 ## Architecture
 
+The app is deployed as a single full-stack Next.js application. Vercel runs both the UI pages and backend route handlers; MongoDB Atlas stores product data; SMTP/Brevo sends auth emails.
+
+```text
+User Browser
+  |-- App Router UI
+  |-- SpeechRecognition / SpeechSynthesis
+  |-- MediaRecorder microphone controls
+  |
+  v
+Vercel Next.js App
+  |-- app/api/auth/*          Auth, reset, verification
+  |-- app/api/interviews/*    Session orchestration
+  |-- app/api/profile/*       Resume/profile handling
+  |-- app/api/reports/*       Reports and sharing
+  |-- app/api/health          Deployment health check
+  |
+  v
+Service Layer
+  |-- lib/auth                JWT and token flows
+  |-- lib/ai                  Provider abstraction
+  |-- lib/security            Rate limiting
+  |-- lib/email               SMTP delivery
+  |
+  v
+External Services
+  |-- MongoDB Atlas           Users, interviews, answers, reports
+  |-- Brevo SMTP              Verification and reset emails
+  |-- Optional Gemini         AI provider override
+```
+
+Compact request flow:
+
 ```mermaid
-flowchart LR
-  Browser["User Browser"] --> App["Vercel Next.js App"]
-  App --> Pages["App Router Pages"]
-  App --> API["Route Handlers"]
-  API --> Auth["Auth Service"]
-  API --> Interview["Interview Service"]
-  API --> Reports["Report Service"]
-  Interview --> AI["AI Provider Interface"]
-  AI --> Mock["Mock Provider"]
-  AI --> Gemini["Optional Gemini Provider"]
-  API --> Mongo["MongoDB Atlas"]
-  API --> SMTP["SMTP/Brevo"]
-  Pages --> Speech["SpeechRecognition/SpeechSynthesis"]
-  Pages --> Media["MediaRecorder/WebRTC-ready Layer"]
+flowchart TD
+  A["Browser UI"] --> B["Next.js Route Handlers"]
+  B --> C["Auth / AI / Report Services"]
+  C --> D["MongoDB Atlas"]
+  C --> E["SMTP / Brevo"]
+  C --> F["Mock AI or Gemini"]
 ```
 
 ## Key Routes
