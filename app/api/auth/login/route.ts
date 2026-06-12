@@ -2,10 +2,17 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { createSessionToken, setSessionCookie } from "@/lib/auth/session";
 import { connectToDatabase } from "@/lib/db/mongoose";
+import { rateLimit } from "@/lib/security/rate-limit";
 import { loginSchema } from "@/lib/validators/auth";
 import { UserModel } from "@/models/User";
 
 export async function POST(request: Request) {
+  const limited = rateLimit(request, "auth-login", 12, 60_000);
+
+  if (limited) {
+    return limited;
+  }
+
   try {
     const body = loginSchema.parse(await request.json());
 

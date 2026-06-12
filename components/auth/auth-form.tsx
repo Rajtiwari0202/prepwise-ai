@@ -73,6 +73,13 @@ export function AuthForm({ mode }: AuthFormProps) {
           {mode === "register" ? "Log in" : "Create account"}
         </Link>
       </p>
+      {mode === "login" && (
+        <p className="text-center text-sm">
+          <Link className="font-medium text-slate-400 hover:text-teal-200" href="/auth/forgot-password">
+            Forgot password?
+          </Link>
+        </p>
+      )}
     </form>
   );
 }

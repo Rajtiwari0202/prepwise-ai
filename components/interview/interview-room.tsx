@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { useSpeechRecognition } from "@/hooks/use-speech-recognition";
 import { useSpeechSynthesis } from "@/hooks/use-speech-synthesis";
+import { RealtimeLab } from "@/components/interview/realtime-lab";
 
 type InterviewRoomProps = {
   interview: {
@@ -47,6 +48,7 @@ export function InterviewRoom({ interview, questions, answers, reportId }: Inter
   const [isCompleting, setIsCompleting] = useState(false);
   const [localAnswers, setLocalAnswers] = useState(answers);
   const [followUp, setFollowUp] = useState("");
+  const [streamingEvaluation, setStreamingEvaluation] = useState("");
 
   const answeredIds = useMemo(() => new Set(localAnswers.map((answer) => answer.questionId)), [localAnswers]);
   const currentQuestion = questions.find((question) => !answeredIds.has(question.id)) || questions[questions.length - 1];
@@ -62,9 +64,10 @@ export function InterviewRoom({ interview, questions, answers, reportId }: Inter
     }
 
     setError("");
+    setStreamingEvaluation("");
     setIsSubmitting(true);
 
-    const response = await fetch(`/api/interviews/${interview.id}/answer`, {
+    const response = await fetch(`/api/interviews/${interview.id}/answer/stream`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -74,16 +77,57 @@ export function InterviewRoom({ interview, questions, answers, reportId }: Inter
       }),
     });
 
-    const result = await response.json();
-    setIsSubmitting(false);
-
     if (!response.ok) {
+      const result = await response.json();
+      setIsSubmitting(false);
       setError(result.error || "Unable to submit answer.");
       return;
     }
 
-    setLocalAnswers((items) => [...items, result.answer]);
-    setFollowUp(result.evaluation.followUpQuestion || "");
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (!reader) {
+      setIsSubmitting(false);
+      setError("Streaming response was not available.");
+      return;
+    }
+
+    let buffer = "";
+
+    while (true) {
+      const { value, done } = await reader.read();
+
+      if (done) {
+        break;
+      }
+
+      buffer += decoder.decode(value, { stream: true });
+      const events = buffer.split("\n\n");
+      buffer = events.pop() || "";
+
+      for (const event of events) {
+        const eventType = event.match(/^event: (.+)$/m)?.[1];
+        const dataText = event.match(/^data: (.+)$/m)?.[1];
+
+        if (!eventType || !dataText) {
+          continue;
+        }
+
+        const data = JSON.parse(dataText);
+
+        if (eventType === "chunk") {
+          setStreamingEvaluation((current) => `${current}${data.text}`);
+        }
+
+        if (eventType === "done") {
+          setLocalAnswers((items) => [...items, data.answer]);
+          setFollowUp(data.evaluation.followUpQuestion || "");
+        }
+      }
+    }
+
+    setIsSubmitting(false);
     setAnswerText("");
     speech.reset();
     router.refresh();
@@ -168,7 +212,7 @@ export function InterviewRoom({ interview, questions, answers, reportId }: Inter
           </div>
         </div>
 
-        {followUp && (
+          {followUp && (
           <div className="mt-4 rounded-lg border border-amber-300/20 bg-amber-300/5 p-4 text-sm text-amber-100">
             Follow-up prompt: {followUp}
           </div>
@@ -185,6 +229,11 @@ export function InterviewRoom({ interview, questions, answers, reportId }: Inter
           {speech.isSupported && speech.transcript && (
             <div className="mt-3 rounded-md border border-slate-800 bg-slate-900/50 p-3 text-sm text-slate-300">
               Voice transcript ready. Review it before submitting.
+            </div>
+          )}
+          {streamingEvaluation && (
+            <div className="mt-3 rounded-md border border-teal-300/20 bg-teal-300/10 p-3 text-sm leading-6 text-teal-50">
+              {streamingEvaluation}
             </div>
           )}
           {!speech.isSupported && (
@@ -252,6 +301,9 @@ export function InterviewRoom({ interview, questions, answers, reportId }: Inter
           )}
         </div>
       </aside>
+      <div className="xl:col-start-2">
+        <RealtimeLab />
+      </div>
     </div>
   );
 }

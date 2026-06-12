@@ -2,11 +2,20 @@ import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/db/mongoose";
 import { createSessionToken, setSessionCookie } from "@/lib/auth/session";
+import { createAuthToken } from "@/lib/auth/tokens";
+import { sendEmail } from "@/lib/email/send";
+import { rateLimit } from "@/lib/security/rate-limit";
 import { registerSchema } from "@/lib/validators/auth";
 import { ProfileModel } from "@/models/Profile";
 import { UserModel } from "@/models/User";
 
 export async function POST(request: Request) {
+  const limited = rateLimit(request, "auth-register", 8, 60_000);
+
+  if (limited) {
+    return limited;
+  }
+
   try {
     const body = registerSchema.parse(await request.json());
 
@@ -35,6 +44,14 @@ export async function POST(request: Request) {
 
     const token = await createSessionToken({ userId: user._id.toString(), email: user.email });
     await setSessionCookie(token);
+
+    const verificationToken = await createAuthToken(user._id.toString(), "email_verification");
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || request.headers.get("origin") || "http://localhost:3000";
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your Prepwise AI account",
+      text: `Verify your account: ${appUrl}/auth/verify?token=${verificationToken}`,
+    });
 
     return NextResponse.json({
       user: {

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
+import { ShareReport } from "@/components/reports/share-report";
 import { ScorePanel } from "@/components/reports/score-panel";
 import { ButtonLink } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth/require-user";
@@ -51,6 +52,14 @@ export default async function ReportPage({ params }: PageProps) {
         <ScorePanel label="Communication" score={report.communicationScore} detail="Structure, clarity, and pacing." />
         <ScorePanel label="Technical" score={report.technicalScore} detail="Concept depth and trade-off handling." />
         <ScorePanel label="Confidence" score={report.confidenceScore} detail="Specificity and answer control." />
+      </section>
+
+      <section className="mt-8">
+        <ShareReport
+          reportId={report._id.toString()}
+          initialShareId={report.publicShareId || ""}
+          initialIsPublic={report.isPublic}
+        />
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-2">

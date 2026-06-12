@@ -27,6 +27,8 @@ const feedbackReportSchema = new Schema(
         score: Number,
       },
     ],
+    isPublic: { type: Boolean, default: false },
+    publicShareId: { type: String, unique: true, sparse: true },
   },
   { timestamps: true },
 );

@@ -57,9 +57,12 @@ Supported modes:
 - AI interviewer with provider abstraction
 - Browser voice input using `SpeechRecognition`
 - Browser voice output using `SpeechSynthesis`
+- WebRTC-ready microphone lab with browser media permissions
 - DSA, HR, resume-based, and mixed interview modes
 - Resume/profile context for personalized questions
+- TXT, PDF, and DOCX resume parsing
 - Answer evaluation with score, strengths, and improvements
+- Streamed answer feedback delivery
 - Feedback report with:
   - Overall score
   - Communication score
@@ -75,6 +78,11 @@ Supported modes:
 - Interview history dashboard
 - User authentication
 - Protected interview and report routes
+- Public read-only report sharing
+- Password reset flow
+- Email verification token flow
+- Lightweight API rate limiting
+- Admin analytics dashboard
 - Free default mock AI provider
 - Optional Gemini provider
 - Production-ready folder structure
@@ -91,7 +99,7 @@ Supported modes:
 | Auth | Custom JWT, HTTP-only cookies, bcrypt |
 | Validation | Zod |
 | AI | Provider abstraction, mock provider, optional Gemini |
-| Voice | Browser Web Speech APIs |
+| Voice | Browser Web Speech APIs, WebRTC-ready media controls |
 | Deployment | Vercel + MongoDB Atlas |
 
 ## Architecture
@@ -132,6 +140,7 @@ lib/db/mongoose.ts
 
 ```text
 app/
+  admin/
   api/
   auth/
   dashboard/
@@ -139,6 +148,7 @@ app/
   interview/
   profile/
   reports/
+  share/
 components/
   auth/
   interview/
@@ -186,6 +196,13 @@ JWT_SECRET=replace-with-a-long-random-secret
 AI_PROVIDER=mock
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-1.5-flash
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+ADMIN_EMAIL=
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM="Prepwise AI <no-reply@prepwise.local>"
 ```
 
 For a completely free local setup, keep:
@@ -251,9 +268,25 @@ JWT_SECRET=your-long-production-secret
 AI_PROVIDER=mock
 GEMINI_API_KEY=
 GEMINI_MODEL=gemini-1.5-flash
+NEXT_PUBLIC_APP_URL=https://your-vercel-domain.vercel.app
+ADMIN_EMAIL=you@example.com
 ```
 
 Vercel hosts both the frontend and backend route handlers. A separate Express server is not required for this version.
+
+### Optional Email Delivery
+
+Password reset and email verification use token-based flows. To actually send emails in production, configure SMTP:
+
+```bash
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your-user
+SMTP_PASS=your-password
+SMTP_FROM="Prepwise AI <no-reply@yourdomain.com>"
+```
+
+If SMTP is not configured, the app still runs. In development, email contents are logged server-side.
 
 ## Voice Support
 
@@ -266,6 +299,8 @@ Voice input uses browser speech recognition, which is best supported in:
 
 If voice input does not work, allow microphone access in the browser or use text answers.
 
+The real-time lab uses browser microphone permissions and `MediaRecorder` as the foundation for future WebRTC streaming.
+
 ## Database Models
 
 - `User`
@@ -274,6 +309,7 @@ If voice input does not work, allow microphone access in the browser or use text
 - `Question`
 - `Answer`
 - `FeedbackReport`
+- `AuthToken`
 
 ## Version 1 Scope
 
@@ -291,17 +327,26 @@ Version 1 includes:
 - Resume/profile context
 - Professional responsive UI
 
+## Version 1.1 Scope
+
+Version 1.1 adds:
+
+- Password reset
+- Email verification token flow
+- Resume parsing for TXT, PDF, and DOCX
+- Public shareable feedback reports
+- Admin analytics dashboard
+- API rate limiting
+- Streamed answer feedback
+- WebRTC-ready microphone controls
+
 ## Roadmap
 
-- PDF/DOCX resume parsing
-- Password reset and email verification
-- Rate limiting
 - Redis-backed session/report caching
-- WebRTC interview mode
 - Interview timer and proctor-style signals
-- Better AI provider streaming
-- Public shareable report links
-- Admin analytics dashboard
+- Full WebRTC media server mode
+- Real SMTP templates
+- Organization/team workspaces
 
 ## Security Notes
 
