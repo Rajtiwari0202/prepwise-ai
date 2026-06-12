@@ -68,7 +68,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         <ArrowRight className="h-4 w-4" />
       </Button>
       <p className="text-center text-sm text-slate-500">
-        {mode === "register" ? "Already have an account?" : "New to InterviewAI Lab?"}{" "}
+        {mode === "register" ? "Already have an account?" : "New to Prepwise AI?"}{" "}
         <Link className="font-medium text-teal-200" href={mode === "register" ? "/auth/login" : "/auth/register"}>
           {mode === "register" ? "Log in" : "Create account"}
         </Link>

@@ -36,7 +36,7 @@ export default function LandingPage() {
                 <ShieldCheck className="h-5 w-5 text-teal-200" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">InterviewAI Lab</p>
+                <p className="text-sm font-semibold text-white">Prepwise AI</p>
                 <p className="text-xs text-slate-500">Open-source career cockpit</p>
               </div>
             </div>

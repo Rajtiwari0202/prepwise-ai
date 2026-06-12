@@ -1,16 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, History, LayoutDashboard, Mic2 } from "lucide-react";
+import { FileText, History, LayoutDashboard, Mic2, ShieldCheck } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
-const navItems = [
+const baseNavItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/interview/new", label: "Practice", icon: Mic2 },
   { href: "/history", label: "History", icon: History },
   { href: "/profile", label: "Profile", icon: FileText },
 ];
+
+const adminNavItem = { href: "/admin", label: "Admin", icon: ShieldCheck };
 
 function isActive(pathname: string, href: string) {
   if (href === "/interview/new") {
@@ -20,8 +22,9 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function DesktopNav() {
+export function DesktopNav({ showAdmin = false }: { showAdmin?: boolean }) {
   const pathname = usePathname();
+  const navItems = showAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
 
   return (
     <nav className="mt-8 space-y-1">
@@ -46,11 +49,17 @@ export function DesktopNav() {
   );
 }
 
-export function MobileNav() {
+export function MobileNav({ showAdmin = false }: { showAdmin?: boolean }) {
   const pathname = usePathname();
+  const navItems = showAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
 
   return (
-    <nav className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-4 rounded-lg border border-slate-800 bg-slate-950/95 p-1 shadow-2xl shadow-black/40 backdrop-blur lg:hidden">
+    <nav
+      className={cn(
+        "fixed inset-x-3 bottom-3 z-30 grid rounded-lg border border-slate-800 bg-slate-950/95 p-1 shadow-2xl shadow-black/40 backdrop-blur lg:hidden",
+        showAdmin ? "grid-cols-5" : "grid-cols-4",
+      )}
+    >
       {navItems.map((item) => {
         const active = isActive(pathname, item.href);
 

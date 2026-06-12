@@ -13,8 +13,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Interview Simulator Platform",
+  title: {
+    default: "Prepwise AI",
+    template: "%s | Prepwise AI",
+  },
   description: "Open-source AI interview practice cockpit for students and job seekers.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  openGraph: {
+    title: "Prepwise AI",
+    description: "AI interview practice with voice, resume-aware questions, and feedback reports.",
+    url: "/",
+    siteName: "Prepwise AI",
+    images: ["/screenshots/landing.png"],
+  },
 };
 
 export default function RootLayout({
