@@ -1,0 +1,48 @@
+{
+  "name": "ai-interview-simulator-platform",
+  "version": "1.0.0",
+  "description": "Open-source AI interview practice platform for students and job seekers.",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "ai",
+    "interview",
+    "nextjs",
+    "mongodb",
+    "opensource"
+  ],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@hookform/resolvers": "^5.2.2",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "jose": "^6.1.3",
+    "lucide-react": "^0.555.0",
+    "mongoose": "^9.0.1",
+    "next": "^16.0.8",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "react-hook-form": "^7.68.0",
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.8",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3"
+  }
+}
