@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { BarChart3, FileText, History, LayoutDashboard, LogOut, Mic2 } from "lucide-react";
+import { BarChart3, FileText, History, LayoutDashboard, Mic2 } from "lucide-react";
 import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import { LogoutButton } from "@/components/layout/logout-button";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -41,16 +41,13 @@ export function AppShell({
             </Link>
           ))}
         </nav>
-        <form action="/api/auth/logout" method="post" className="absolute bottom-5 left-5 right-5">
+        <div className="absolute bottom-5 left-5 right-5">
           <div className="mb-4 rounded-lg border border-slate-800 bg-slate-900/50 p-3">
             <p className="text-sm font-semibold text-white">{user.name}</p>
             <p className="truncate text-xs text-slate-500">{user.email}</p>
           </div>
-          <Button variant="secondary" className="w-full" type="submit">
-            <LogOut className="h-4 w-4" />
-            Log out
-          </Button>
-        </form>
+          <LogoutButton />
+        </div>
       </aside>
       <div className="lg:pl-72">
         <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/80 px-5 py-4 backdrop-blur lg:hidden">
