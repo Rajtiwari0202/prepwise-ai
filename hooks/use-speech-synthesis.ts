@@ -1,14 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export function useSpeechSynthesis() {
-  const [isSupported, setIsSupported] = useState(false);
+  const [isSupported] = useState(() => typeof window !== "undefined" && "speechSynthesis" in window);
   const [isSpeaking, setIsSpeaking] = useState(false);
-
-  useEffect(() => {
-    setIsSupported("speechSynthesis" in window);
-  }, []);
 
   function speak(text: string) {
     if (!isSupported) {

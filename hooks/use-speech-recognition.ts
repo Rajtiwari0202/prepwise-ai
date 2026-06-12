@@ -16,7 +16,11 @@ type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
 
 export function useSpeechRecognition() {
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
-  const [isSupported, setIsSupported] = useState(false);
+  const [isSupported] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      ("SpeechRecognition" in window || "webkitSpeechRecognition" in window),
+  );
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
 
@@ -43,7 +47,6 @@ export function useSpeechRecognition() {
     };
     recognition.onend = () => setIsListening(false);
     recognitionRef.current = recognition;
-    setIsSupported(true);
   }, []);
 
   function start() {
