@@ -75,7 +75,7 @@ export default async function DashboardPage() {
                   <div>
                     <p className="font-semibold text-white">{interview.role}</p>
                     <p className="text-sm text-slate-500">
-                      {interview.mode.toUpperCase()} • {interview.difficulty} • {interview.status}
+                      {interview.mode.toUpperCase()} / {interview.difficulty} / {interview.status}
                     </p>
                   </div>
                   <ButtonLink href={`/interview/${interview._id.toString()}`} variant="secondary">

@@ -46,7 +46,7 @@ export default async function HistoryPage() {
                   <div>
                     <p className="text-lg font-semibold text-white">{interview.role}</p>
                     <p className="mt-1 text-sm text-slate-500">
-                      {interview.mode.toUpperCase()} • {interview.difficulty} • {interview.status} • Score{" "}
+                      {interview.mode.toUpperCase()} / {interview.difficulty} / {interview.status} / Score{" "}
                       {interview.summary?.overallScore || 0}%
                     </p>
                   </div>

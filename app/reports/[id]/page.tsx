@@ -38,7 +38,7 @@ export default async function ReportPage({ params }: PageProps) {
             {interview?.role || "Interview"} readiness analysis
           </h1>
           <p className="mt-3 text-slate-400">
-            {interview?.mode.toUpperCase()} • {interview?.difficulty} • Structured feedback from the session transcript
+            {interview?.mode.toUpperCase()} / {interview?.difficulty} / Structured feedback from the session transcript
           </p>
         </div>
         <ButtonLink href="/interview/new" variant="secondary">

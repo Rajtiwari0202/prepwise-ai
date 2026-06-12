@@ -1,14 +1,8 @@
 import Link from "next/link";
-import { BarChart3, FileText, History, LayoutDashboard, Mic2 } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import type { ReactNode } from "react";
+import { DesktopNav, MobileNav } from "@/components/layout/app-nav";
 import { LogoutButton } from "@/components/layout/logout-button";
-
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/interview/new", label: "New interview", icon: Mic2 },
-  { href: "/history", label: "History", icon: History },
-  { href: "/profile", label: "Resume profile", icon: FileText },
-];
 
 export function AppShell({
   children,
@@ -29,18 +23,7 @@ export function AppShell({
             <p className="text-xs text-slate-500">Career cockpit</p>
           </div>
         </Link>
-        <nav className="mt-8 space-y-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-slate-300 transition hover:bg-slate-900 hover:text-white"
-            >
-              <item.icon className="h-4 w-4 text-slate-500" />
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <DesktopNav />
         <div className="absolute bottom-5 left-5 right-5">
           <div className="mb-4 rounded-lg border border-slate-800 bg-slate-900/50 p-3">
             <p className="text-sm font-semibold text-white">{user.name}</p>
@@ -51,12 +34,18 @@ export function AppShell({
       </aside>
       <div className="lg:pl-72">
         <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/80 px-5 py-4 backdrop-blur lg:hidden">
-          <Link href="/dashboard" className="font-semibold text-white">
-            InterviewAI Lab
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link href="/dashboard" className="font-semibold text-white">
+              InterviewAI Lab
+            </Link>
+            <span className="rounded-md border border-slate-800 px-2.5 py-1 text-xs text-slate-400">
+              {user.name}
+            </span>
+          </div>
         </header>
-        <main className="mx-auto max-w-6xl px-5 py-8 lg:px-8">{children}</main>
+        <main className="mx-auto max-w-6xl px-5 pb-28 pt-8 lg:px-8 lg:pb-8">{children}</main>
       </div>
+      <MobileNav />
     </div>
   );
 }

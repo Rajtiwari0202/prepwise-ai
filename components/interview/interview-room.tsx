@@ -127,7 +127,7 @@ export function InterviewRoom({ interview, questions, answers, reportId }: Inter
             <p className="text-sm uppercase tracking-[0.22em] text-teal-200">Live interview room</p>
             <h1 className="mt-3 text-3xl font-semibold text-white">{interview.role}</h1>
             <p className="mt-2 text-sm text-slate-500">
-              {interview.mode.toUpperCase()} • {interview.difficulty} • {localAnswers.length}/{questions.length} answered
+              {interview.mode.toUpperCase()} / {interview.difficulty} / {localAnswers.length}/{questions.length} answered
             </p>
           </div>
           <div className="w-full max-w-xs">
